@@ -1,0 +1,6 @@
+{
+    "scripts": {
+        "dev": "rustc hello.rs && ./hello",
+        "docs": "rustup doc --std"
+    }
+}
