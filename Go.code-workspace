@@ -1,0 +1,29 @@
+{
+	"folders": [
+        {
+            "path": "."
+        },
+        {
+            "path": "../dart/tut1"
+        },
+        {
+            "path": "../dart/tu_ws"
+        },
+        {
+            "path": "../../Web/modules/node-exe"
+        },
+        {
+            "path": "mobile-bin"
+        },
+        {
+            "path": "../../Mobile/Flutter/flutter_app"
+        },
+        {
+            "path": "../../Web/turbo-wp/ionic_repo/apps/tu-ionic"
+        },
+        {
+            "path": "databases"
+        }
+    ],
+    "settings": {}
+}
