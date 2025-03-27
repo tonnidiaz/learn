@@ -1,0 +1,54 @@
+package main
+
+import (
+	"fmt"
+	"log"
+	"os"
+
+	"gorm.io/driver/sqlite"
+	"gorm.io/gorm"
+)
+
+const dbPath = "encrypted.db"
+const encryptionKey = "your-secure-password"
+
+type User struct {
+	ID   uint `gorm:"primaryKey"`
+	Name string
+}
+
+func main() {
+	// Delete the database if it exists (for testing purposes)
+	if _, err := os.Stat(dbPath); err == nil {
+		fmt.Println("Deleting existing database to test encryption...")
+		os.Remove(dbPath)
+	}
+
+	// Create an encrypted SQLite database
+	// dsn := fmt.Sprintf("file:%s?mode=rwc", dbPath)
+	dsn := fmt.Sprintf("file:%s?cipher=chacha20&key=ThisIsAReallyLongKeyWith32Bytess", dbPath)
+	db, err := gorm.Open(sqlite.Open(dsn), &gorm.Config{})
+	if err != nil {
+		log.Fatal("Failed to create database:", err)
+	}
+
+	// Set encryption key (VERY IMPORTANT)
+	sqlDB, err := db.DB()
+	if err != nil {
+		log.Fatal("Failed to get raw DB connection:", err)
+	}
+	_, err = sqlDB.Exec(fmt.Sprintf("PRAGMA key = '%s';", encryptionKey))
+	if err != nil {
+		log.Fatal("Failed to apply encryption key:", err)
+	}
+
+	// AutoMigrate schema
+	db.AutoMigrate(&User{})
+
+	// Insert test data
+	db.Create(&User{Name: "Alice"})
+	db.Create(&User{Name: "Malibu"})
+	db.Create(&User{Name: "Zady"})
+
+	fmt.Println("Encrypted database created successfully.")
+}

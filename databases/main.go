@@ -1,88 +1,56 @@
 package main
 
-import (
-	"fmt"
-	"log"
+// "fmt"
+// "log"
+// "os"
 
-	"gorm.io/driver/sqlite"
-	"gorm.io/gorm"
-)
+// "crawshaw.io/sqlite"
+// "gorm.io/driver/sqlite"
+// "gorm.io/gorm"
 
-var db *gorm.DB
+const dbPath = "encrypted.db"
+const encryptionKey = "your-secure-password"
 
-type User struct {
-	gorm.Model
-	Username string
-	Age      int32
-}
+// type User struct {
+// 	ID   uint `gorm:"primaryKey"`
+// 	Name string
+// }
 
 func main() {
-	db, _ = gorm.Open(sqlite.Open("test.db"), &gorm.Config{})
-
-	// Migrate the schema (create table)
-	log.Println(("Migrating schemas..."))
-	db.AutoMigrate(&User{})
-
-	// createUser("shanel", 16)
-	user := findUser("tonnidiaz")
-	if user == nil {
-		log.Println("Could not get user")
-	} else {
-		log.Println("The user is:", user.Username)
-		user, err := updateUser(user, "tonnidiaz-4587")
-		if err != nil {
-			log.Println("Error updating user:", err)
-			return
-		}
-		log.Println("\nUser updated to:", user)
-	}
-
+	// cypher_main()
+	gorm_main()
 }
+func this_main() {
+	// // Delete existing database for testing
+	// if _, err := os.Stat(dbPath); err == nil {
+	// 	fmt.Println("Deleting existing database to test encryption...")
+	// 	os.Remove(dbPath)
+	// }
 
-func createUser(username string, age int32) {
-	log.Println("Creating user:", username)
-	db.Create(&User{Username: username, Age: age})
-	log.Println("User created")
-}
+	// // Open SQLite with SQLCipher encryption
+	// dsn := fmt.Sprintf("file:%s?_pragma=key('%s')", dbPath, encryptionKey)
+	// db, err := gorm.Open(sqlite.Open(dsn), &gorm.Config{})
+	// if err != nil {
+	// 	log.Fatal("Failed to open encrypted database:", err)
+	// }
 
-func findUser(username string, age ...int32) *User {
-	fmt.Println()
-	var user User
-	if username != "" {
-		log.Println("Getting user by username...")
-		r := db.First(&user, "username = ?", username)
-		if r.Error != nil {
-			return nil
-		}
-	} else if age != nil {
-		log.Println("Getting user by age...")
-		r := db.First(&user, "age = ?", age)
-		if r.Error != nil {
-			return nil
-		}
-	} else {
-		log.Println("Either provide username or age")
-		return nil
-	}
+	// // Get raw DB connection
+	// sqlDB, err := db.DB()
+	// if err != nil {
+	// 	log.Fatal("Failed to get raw DB connection:", err)
+	// }
 
-	return &user
-}
+	// // Verify encryption is applied
+	// _, err = sqlDB.Exec("PRAGMA cipher_version;")
+	// if err != nil {
+	// 	log.Fatal("SQLCipher is NOT applied! Database is not encrypted.")
+	// }
 
-func updateUser(user *User, username string, age ...int32) (*User, error) {
-	log.Println("\nUpdating user...")
-	var tsx *gorm.DB
-	if username != "" {
-		tsx = db.Model(user).Update("username", username)
+	// // AutoMigrate schema
+	// db.AutoMigrate(&User{})
 
-	} else if age != nil {
-		tsx = db.Model(user).Update("age", age)
+	// // Insert test data
+	// db.Create(&User{Name: "Alice"})
 
-	} else if username != "" && age != nil {
-		tsx = db.Model(user).Updates(User{Username: username, Age: age[0]})
-
-	}
-	if tsx.Error != nil {
-		return nil, tsx.Error
-	}
-	return user, nil
+	// fmt.Println("Encrypted database created successfully.")
 }
