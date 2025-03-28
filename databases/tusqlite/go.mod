@@ -1,4 +1,4 @@
-module tu.dbs/dbs/tusqlite
+module dbs.tu/tusqlite
 
 go 1.24.0
 

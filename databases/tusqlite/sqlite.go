@@ -2,6 +2,7 @@ package tusqlite
 
 import (
 	"database/sql"
+	"fmt"
 	"strconv"
 	"strings"
 
@@ -20,11 +21,12 @@ const DriverName = "sqlite3"
 type Dialector struct {
 	DriverName string
 	DSN        string
+	Key        string
 	Conn       gorm.ConnPool
 }
 
-func Open(dsn string) gorm.Dialector {
-	return &Dialector{DSN: dsn}
+func Open(dbName string, key string) gorm.Dialector {
+	return &Dialector{DSN: dbName, Key: key}
 }
 
 func (dialector Dialector) Name() string {
@@ -32,6 +34,7 @@ func (dialector Dialector) Name() string {
 }
 
 func (dialector Dialector) Initialize(db *gorm.DB) (err error) {
+	key := dialector.Key
 	if dialector.DriverName == "" {
 		dialector.DriverName = DriverName
 	}
@@ -44,7 +47,8 @@ func (dialector Dialector) Initialize(db *gorm.DB) (err error) {
 	if dialector.Conn != nil {
 		db.ConnPool = dialector.Conn
 	} else {
-		db.ConnPool, err = sql.Open(dialector.DriverName, dialector.DSN)
+		fmt.Printf("\nEncrypting db [%s]...\n", dialector.DriverName)
+		db.ConnPool, err = sql.Open(dialector.DriverName, fmt.Sprintf("%s?_pragma_key=%s", dialector.DSN, key))
 		if err != nil {
 			return err
 		}
